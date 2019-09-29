@@ -161,4 +161,3 @@ define ferm::rule (
       }
     }
   }
-}
