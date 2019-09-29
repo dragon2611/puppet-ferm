@@ -133,6 +133,11 @@ define ferm::rule (
     String  => "outerface ${outerface}",
     default => '',
   }
+  $interface_real = $interface ? {
+    undef   => '',
+    String  => "interface $interface}",
+    default => '',
+  }
   $proto_options_real = $proto_options ? {
     undef   =>  '',
     default => $proto_options
@@ -148,32 +153,9 @@ define ferm::rule (
     $filename = "${ferm::configdirectory}/chains/${table}-${chain}.conf"
   }
 
-  $rule = squeeze("${comment_real} ${proto_real} ${proto_options_real} ${outerface_real} ${dport_real} ${sport_real} ${daddr_real} ${saddr_real} ${action_real};", ' ')
+  $rule = squeeze("${comment_real} ${proto_real} ${proto_options_real} ${interface_real} ${outerface_real} ${dport_real} ${sport_real} ${daddr_real} ${saddr_real} ${action_real};", ' ')
   if $ensure == 'present' {
-    if $interface {
-      unless defined(Concat::Fragment["${chain}-${interface}-aaa"]) {
-        concat::fragment{"${chain}-${interface}-aaa":
-          target  => $filename,
-          content => "interface ${interface} {\n",
-          order   => $interface,
-        }
-      }
-
-      concat::fragment{"${chain}-${interface}-${name}":
-        target  => $filename,
-        content => "  ${rule}\n",
-        order   => $interface,
-      }
-
-      unless defined(Concat::Fragment["${chain}-${interface}-zzz"]) {
-        concat::fragment{"${chain}-${interface}-zzz":
-          target  => $filename,
-          content => "}\n",
-          order   => $interface,
-        }
-      }
-    } else {
-      concat::fragment{"${chain}-${name}":
+        concat::fragment{"${chain}-${name}":
         target  => $filename,
         content => "${rule}\n",
       }
