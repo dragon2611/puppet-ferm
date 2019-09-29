@@ -135,7 +135,7 @@ define ferm::rule (
   }
   $interface_real = $interface ? {
     undef   => '',
-    String  => "interface $interface}",
+    String  => "interface {$interface}",
     default => '',
   }
   $proto_options_real = $proto_options ? {
